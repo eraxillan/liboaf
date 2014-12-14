@@ -64,12 +64,14 @@
 #	include <stdbool.h>
 #endif
 
+#if !defined(_MSC_VER)
 #ifndef va_copy
 #	ifdef __va_copy
 #		define va_copy(dst, src) __va_copy(dst, src)
 #	else
 #		define va_copy(dst, src) ((dst) = (src))
 #	endif
+#endif
 #endif
 
 #endif /* INCLUDE_compat_h__ */

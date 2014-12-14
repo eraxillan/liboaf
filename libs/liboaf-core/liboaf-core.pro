@@ -6,6 +6,8 @@ TEMPLATE = lib
 #
 CONFIG += qt thread warn_on
 
+QT += widgets
+
 #
 # Настройка динамической линковки под Windows
 #

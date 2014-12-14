@@ -11,7 +11,7 @@
 extern "C" const char*
 qt_translate (const char* _str)
 {
-	QByteArray ba = QCoreApplication::translate ("libgit2", _str, "libgit2", QCoreApplication::UnicodeUTF8).toUtf8 ();
+	QByteArray ba = QCoreApplication::translate ("libgit2", _str, "libgit2").toUtf8 ();
 
 	return ba.data ();
 }

@@ -1,6 +1,11 @@
 TARGET   = oaf-gui-qt4
 TEMPLATE = lib
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += widgets
+	QT += webkitwidgets
+}
+
 #
 # Build configuration
 #

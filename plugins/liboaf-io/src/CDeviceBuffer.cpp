@@ -9,6 +9,10 @@
 #include <QUrl>
 #include <QCryptographicHash>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#include <QUrlQuery>
+#endif
+
 #include "CDeviceBuffer.h"
 
 using namespace OAF::IO;
@@ -32,8 +36,16 @@ CDeviceBuffer::getInfo (DeviceInfo _what)
 		case PATH:
 		{
 			QUrl url (QString ("raw:%1").arg (QString (m_data.toHex ())));
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 			if (!m_copy_id.isNull ())
 				url.addQueryItem ("oaf_copy_id", m_copy_id.toString ());
+#else
+			QUrlQuery urlQuery (url);
+			if (!m_copy_id.isNull ())
+				urlQuery.addQueryItem ("oaf_copy_id", m_copy_id.toString ());
+
+			url.setQuery (urlQuery);
+#endif
 			res = url.toString ();
 			break;
 		}
@@ -81,6 +93,7 @@ CDeviceBuffer::setInfo (DeviceInfo _what, const QVariant& _v)
 		//
 		// Специальная обработка параметра as_copy
 		//
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		if (raw_data.hasQueryItem ("oaf_as_copy") &&
 			(raw_data.queryItemValue ("oaf_as_copy").compare ("no"   , Qt::CaseInsensitive) != 0) &&
 			(raw_data.queryItemValue ("oaf_as_copy").compare ("false", Qt::CaseInsensitive) != 0))
@@ -96,6 +109,24 @@ CDeviceBuffer::setInfo (DeviceInfo _what, const QVariant& _v)
 		// Устанавливаем реальные данные
 		//
 		m_data = QByteArray::fromHex (raw_data.toString (QUrl::RemoveScheme|QUrl::RemoveQuery).toAscii ());
+#else
+		QUrlQuery raw_data_query (raw_data);
+		if (raw_data_query.hasQueryItem ("oaf_as_copy") &&
+			(raw_data_query.queryItemValue ("oaf_as_copy").compare ("no"   , Qt::CaseInsensitive) != 0) &&
+			(raw_data_query.queryItemValue ("oaf_as_copy").compare ("false", Qt::CaseInsensitive) != 0))
+			m_copy_id = QUuid::createUuid ();
+
+		//
+		// Специальная обработка параметра oaf_copy_id
+		//
+		if (raw_data_query.hasQueryItem ("oaf_copy_id"))
+			m_copy_id = QUuid (raw_data_query.queryItemValue ("oaf_copy_id"));
+
+		//
+		// Устанавливаем реальные данные
+		//
+		m_data = QByteArray::fromHex (raw_data.toString (QUrl::RemoveScheme|QUrl::RemoveQuery).toLatin1 ());
+#endif
 	}
 }
 

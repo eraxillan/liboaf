@@ -32,11 +32,11 @@ GIT_INLINE(int) hash_cng_prov_init(void)
 		return -1;
 
 	/* Load bcrypt.dll explicitly from the system directory */
-	if ((dll_path_len = GetSystemDirectory(dll_path, MAX_PATH)) == 0 ||
+	if ((dll_path_len = GetSystemDirectoryA(dll_path, MAX_PATH)) == 0 ||
 		dll_path_len > MAX_PATH ||
-		StringCchCat(dll_path, MAX_PATH, "\\") < 0 ||
-		StringCchCat(dll_path, MAX_PATH, GIT_HASH_CNG_DLL_NAME) < 0 ||
-		(hash_prov.prov.cng.dll = LoadLibrary(dll_path)) == NULL)
+		StringCchCatA(dll_path, MAX_PATH, "\\") < 0 ||
+		StringCchCatA(dll_path, MAX_PATH, GIT_HASH_CNG_DLL_NAME) < 0 ||
+		(hash_prov.prov.cng.dll = LoadLibraryA(dll_path)) == NULL)
 		return -1;
 
 	/* Load the function addresses */

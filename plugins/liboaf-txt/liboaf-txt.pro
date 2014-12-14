@@ -1,6 +1,12 @@
 TARGET   = oaf-txt-1.0
 TEMPLATE = lib
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += concurrent
+	QT += widgets
+	QT += printsupport
+}
+
 #
 # Build configuration
 #

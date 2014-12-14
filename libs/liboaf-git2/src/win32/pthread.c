@@ -235,7 +235,7 @@ int win32_pthread_initialize(void)
 	if (win32_kernel32_dll)
 		return 0;
 
-	win32_kernel32_dll = LoadLibrary("Kernel32.dll");
+	win32_kernel32_dll = LoadLibrary(TEXT("Kernel32.dll"));
 	if (!win32_kernel32_dll) {
 		giterr_set(GITERR_OS, QT_TRANSLATE_NOOP("libgit2", "Could not load Kernel32.dll!"));
 		return -1;

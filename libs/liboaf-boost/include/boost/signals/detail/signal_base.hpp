@@ -36,7 +36,9 @@ namespace boost {
         call_notification(const shared_ptr<signal_base_impl>&);
         ~call_notification();
 
+		#pragma warning (disable: 4251)
         shared_ptr<signal_base_impl> impl;
+		#pragma warning (default: 4251)
       };
 
       // Implementation of base class for all signals. It handles the
@@ -110,12 +112,15 @@ namespace boost {
 
         // Slots
         mutable named_slot_map slots_;
+		#pragma warning (disable: 4251)
         any combiner_;
+		#pragma warning (default: 4251)
 
         // Types
         typedef named_slot_map::iterator iterator;
       };
 
+	  #pragma warning (disable: 4251)
       class BOOST_SIGNALS_DECL signal_base : public noncopyable {
       public:
         typedef signal_base_impl::compare_type compare_type;
@@ -148,6 +153,7 @@ namespace boost {
 
         shared_ptr<signal_base_impl> impl;
       };
+	  #pragma warning (default: 4251)
     } // end namespace detail
   } // end namespace BOOST_SIGNALS_NAMESPACE
 } // end namespace boost

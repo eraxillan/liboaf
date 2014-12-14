@@ -115,7 +115,9 @@ namespace boost {
       friend class BOOST_SIGNALS_NAMESPACE::detail::bound_objects_visitor;
 
       // Pointer to the actual contents of the connection
+	  #pragma warning (disable: 4251)
       shared_ptr<BOOST_SIGNALS_NAMESPACE::detail::basic_connection> con;
+	  #pragma warning (default: 4251)
 
       // True if the destruction of this connection object should disconnect
       bool controlling_connection;

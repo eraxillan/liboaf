@@ -11,6 +11,8 @@
 
 #include <OAF/OafStdGlobal.h>
 
+#include  <functional>
+
 #include <QString>
 #include <QStringList>
 #include <QDir>

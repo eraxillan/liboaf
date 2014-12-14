@@ -53,7 +53,9 @@ namespace BOOST_SIGNALS_NAMESPACE {
     typedef connection_list::iterator connection_iterator;
 
     // List of connections that this object is part of
+	#pragma warning (disable: 4251)
     mutable connection_list connected_signals;
+	#pragma warning (default: 4251)
 
     // True when the object is being destroyed
     mutable bool dying;

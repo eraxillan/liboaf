@@ -11,6 +11,10 @@
 #include <QDir>
 #include <QFileInfo>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#include <QUrlQuery>
+#endif
+
 #include <git2.h>
 
 #include <OAF/StreamUtils.h>
@@ -42,9 +46,16 @@ OAF::CGitUrl::operator= (const QUrl& _other)
 		//
 		// Специальная обработка параметра as_copy
 		//
-		if (_other.hasQueryItem ("oaf_as_copy") &&
-				(_other.queryItemValue ("oaf_as_copy").compare ("no"   , Qt::CaseInsensitive) != 0) &&
-				(_other.queryItemValue ("oaf_as_copy").compare ("false", Qt::CaseInsensitive) != 0))
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+		if (_other.hasQueryItem ("oaf_as_copy")
+			&& (_other.queryItemValue ("oaf_as_copy").compare ("no"   , Qt::CaseInsensitive) != 0)
+			&& (_other.queryItemValue ("oaf_as_copy").compare ("false", Qt::CaseInsensitive) != 0))
+#else
+		QUrlQuery queryItem( _other );
+		if( queryItem.hasQueryItem ("oaf_as_copy")
+			&& (queryItem.queryItemValue ("oaf_as_copy").compare ("no", Qt::CaseInsensitive) != 0)
+			&& (queryItem.queryItemValue ("oaf_as_copy").compare ("false", Qt::CaseInsensitive) != 0))
+#endif
 		{
 			//
 			// Генерируем новый уникальный идентификатор копии
@@ -53,13 +64,21 @@ OAF::CGitUrl::operator= (const QUrl& _other)
 			//
 			// ...и заменяем на него oaf_as_copy
 			//
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 			m_git_url.removeQueryItem ("oaf_as_copy");
 			m_git_url.addQueryItem ("oaf_copy_id", m_copy_id.toString ());
+#else
+			QUrlQuery queryItem( m_git_url );
+			queryItem.removeQueryItem ("oaf_as_copy");
+			queryItem.addQueryItem ("oaf_copy_id", m_copy_id.toString ());
+			m_git_url.setQuery (queryItem);
+#endif
 		}
 
 		//
 		// Специальная обработка параметра oaf_copy_id
 		//
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		if (_other.hasQueryItem ("oaf_copy_id"))
 			m_copy_id = QUuid (_other.queryItemValue ("oaf_copy_id"));
 
@@ -68,6 +87,17 @@ OAF::CGitUrl::operator= (const QUrl& _other)
 		//
 		if (_other.hasQueryItem ("hash"))
 			m_hash = _other.queryItemValue ("hash");
+#else
+		QUrlQuery query (_other);
+		if (query.hasQueryItem ("oaf_copy_id"))
+			m_copy_id = QUuid (query.queryItemValue ("oaf_copy_id"));
+
+		//
+		// Специальная обработка параметра hash (SHA1-идентификатора объекта в git-репозитории)
+		//
+		if (query.hasQueryItem ("hash"))
+			m_hash = query.queryItemValue ("hash");
+#endif
 
 		//
 		// Абсолютное путь и имя файла для извлечения из репозитория

@@ -9,6 +9,8 @@
 #ifndef BOOST_NONCOPYABLE_HPP_INCLUDED
 #define BOOST_NONCOPYABLE_HPP_INCLUDED
 
+#include <boost/signals/detail/config.hpp>
+
 namespace boost {
 
 //  Private copy constructor and copy assignment ensure classes derived from
@@ -18,7 +20,7 @@ namespace boost {
 
 namespace noncopyable_  // protection from unintended ADL
 {
-  class noncopyable
+  class BOOST_SIGNALS_DECL noncopyable
   {
    protected:
       noncopyable() {}
@@ -27,6 +29,7 @@ namespace noncopyable_  // protection from unintended ADL
       noncopyable( const noncopyable& );
       const noncopyable& operator=( const noncopyable& );
   };
+
 }
 
 typedef noncopyable_::noncopyable noncopyable;

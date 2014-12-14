@@ -11,6 +11,10 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#include <QUrlQuery>
+#endif
+
 #include <OAF/StreamUtils.h>
 #include <OAF/MimeHelpers.h>
 
@@ -37,7 +41,15 @@ CDeviceFile::getInfo (DeviceInfo _what)
 		{
 			QUrl url = OAF::fromLocalFile (QFileInfo (*m_file).absoluteFilePath ());
 			if (!m_copy_id.isNull ())
+			{
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 				url.addQueryItem ("oaf_copy_id", m_copy_id.toString ());
+#else
+				QUrlQuery query (url);
+				query.addQueryItem ("oaf_copy_id", m_copy_id.toString ());
+				url.setQuery (query);
+#endif
+			}
 			res = url.toString ();
 			break;
 		}
@@ -85,6 +97,7 @@ CDeviceFile::setInfo (DeviceInfo _what, const QVariant& _v)
 		//
 		QUrl file_name (_v.value<QString> ());
 
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
 		//
 		// Специальная обработка параметра as_copy
 		//
@@ -98,7 +111,22 @@ CDeviceFile::setInfo (DeviceInfo _what, const QVariant& _v)
 		//
 		if (file_name.hasQueryItem ("oaf_copy_id"))
 			m_copy_id = QUuid (file_name.queryItemValue ("oaf_copy_id"));
+#else
+		QUrlQuery file_name_query (file_name);
+		//
+		// Специальная обработка параметра as_copy
+		//
+		if (file_name_query.hasQueryItem ("oaf_as_copy") &&
+			(file_name_query.queryItemValue ("oaf_as_copy").compare ("no"   , Qt::CaseInsensitive) != 0) &&
+			(file_name_query.queryItemValue ("oaf_as_copy").compare ("false", Qt::CaseInsensitive) != 0))
+			m_copy_id = QUuid::createUuid ();
 
+		//
+		// Специальная обработка параметра oaf_copy_id
+		//
+		if (file_name_query.hasQueryItem ("oaf_copy_id"))
+			m_copy_id = QUuid (file_name_query.queryItemValue ("oaf_copy_id"));
+#endif
 		//
 		// Устанавливаем реальное имя файла
 		//

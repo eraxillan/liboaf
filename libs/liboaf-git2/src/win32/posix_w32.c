@@ -190,7 +190,7 @@ int p_readlink(const char *link, char *target, size_t target_len)
 	 * it is not available in platforms older than Vista
 	 */
 	if (pGetFinalPath == NULL) {
-		HMODULE module = GetModuleHandle("kernel32");
+		HMODULE module = GetModuleHandle(TEXT("kernel32"));
 
 		if (module != NULL)
 			pGetFinalPath = (fpath_func)GetProcAddress(module, "GetFinalPathNameByHandleW");

@@ -1,6 +1,11 @@
 TARGET   = qtextedit
 TEMPLATE = app
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += concurrent
+	QT += widgets
+}
+
 #
 # Build configuration
 #

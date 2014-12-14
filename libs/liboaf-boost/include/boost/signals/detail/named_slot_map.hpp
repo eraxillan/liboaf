@@ -127,7 +127,7 @@ public:
         || slot_ == other.slot_));
   }
 
-#if BOOST_WORKAROUND(_MSC_VER, <= 1600)
+#if BOOST_WORKAROUND(_MSC_VER, <= 1800)
   void decrement();
   void advance(difference_type);
 #endif
@@ -150,10 +150,12 @@ private:
     }
   }
 
+  #pragma warning (disable: 4251)
   group_iterator group;
   group_iterator last_group;
   slot_pair_iterator slot_;
   bool slot_assigned;
+  #pragma warning (default: 4251)
 
   friend class named_slot_map;
 };
@@ -184,8 +186,10 @@ private:
   {
     return (group->second.empty() && group != groups.begin() && group != back);
   }
+  #pragma warning (disable: 4251)
   slot_container_type groups;
   group_iterator back;
+  #pragma warning (default: 4251)
 };
 
 } } }

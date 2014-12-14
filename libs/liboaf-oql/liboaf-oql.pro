@@ -1,6 +1,8 @@
 TARGET   = oaf-oql-qt4
 TEMPLATE = lib
 
+QT += concurrent
+
 #
 # Build configuration
 #

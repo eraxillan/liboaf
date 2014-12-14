@@ -55,7 +55,7 @@ OAF::makeAbsolutePath (const QString& _origin, const QString& _relative)
 		//
 		relative.setScheme (origin.scheme ());
 		relative.setAuthority (origin.authority ());
-		relative.setEncodedQuery (origin.encodedQuery ());
+		relative.setQuery (origin.query ());
 
 		//
 		// И формируем его путь с учётом пути к первому файлу

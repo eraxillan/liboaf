@@ -48,7 +48,9 @@ namespace boost {
         // Create a connection for this slot
         void create_connection();
 
+		#pragma warning (disable: 4251)
         shared_ptr<data_t> data;
+		#pragma warning (default: 4251)
 
       private:
         static void bound_object_destructed(void*, void*) {}

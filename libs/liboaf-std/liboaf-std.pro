@@ -1,6 +1,11 @@
 TARGET   = oaf-std-qt4
 TEMPLATE = lib
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += concurrent
+	QT += widgets
+}
+
 #
 # Build configuration
 #
