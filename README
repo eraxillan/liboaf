@@ -1,23 +1,49 @@
-Библиотека libOAF/Qt4 ((O)bject (A)ctivation (F)ramework), предназначена
-для разработки на языке С++ с использованием библиотеки Qt4 программ,
-состоящих из компонентов, связанных между собой небольшим количеством
-интерфейсов. Эта библиотека использована при разработке системы управления
-требованиями Пикет (http://piket.org.ru). Библиотека собирается и работает
-как на разных версиях Linux, так и на версиях Windows, начиная с Windows XP.
+===============================================================================
+Brief description
 
-В случае libOAF/Qt4 под компонентом понимается разделяемая библиотека,
-оформленная определённым образом и снабжённая специальным описанием.
-Изначально libOAF/Qt4 основана на идеях компонентной системы OAF/Bonobo,
-однако существенно проще неё за счёт того, что мы не пытались сделать
-супер-универсальный инструмент, а решали вполне ограниченный набор проблем.
+The library libOAF/Qt ((O)bject (A)ctivation (F)ramework) was created
+for C++/Qt developers. It allows to use very flexible component-based
+architecture in the program, where components are linked with each other
+using a few number of programming interfaces.
 
-Библиотека возникла как внутренний инструмент для решения следующих задач:
-* выделение проектирования архитектуры в относительно независимую от
-  кодирования задачу с возможностью описания архитектуры в терминах
-  предопределённых программных интерфейсов;
-* разделение разработки на ряд максимально независимых частей, для
-  организации контролируемой совместной работы нескольких программистов
-  над одним проектом;
-* реализация возможности подключения дополнительных компонентов к
-  приложению уже после фиксации кода и сборки и фиксации дистрибутива
-  приложения.
+The term "component" should be understood as "shared library with special code",
+and the specific description (what interfaces are exported, what are required
+for this component, and so on).
+
+This library was actively used in development of requirements 
+management system called "Picket" (rus. "Пикет", http://piket.org.ru).
+
+===============================================================================
+System requirements
+
+This Library can be build in any operating system where are available:
+- C++03 and higher compiler
+- Qt framework version 4 or higher
+
+The library was compiled and heavily tested under such platforms:
+- Windows / Microsoft Visual Studio 2010/ Qt 4.8
+- (K)Ubuntu Linux / gcc 4.8 / Qt 4.8
+
+The others are waiting for beta-testers, so you are always welcome :)
+
+===============================================================================
+Brief history
+
+The Library was based on GNOME OAF/Bonobo ideas. But it was designed
+for concrete challanges, and not pretend to be absolutely unversal tool.
+
+It helped us to:
+* separate coding and program architecture design: the last one
+  can be described in programming interfaces terms
+* split program to the several components, where each of the components
+  is so independent from others as it can be
+* make the program extensible in the runtime using additional components
+
+So it:
+* Simplify the Team Leader work with program design
+* Simplify programmers collaboration:
+  each of them just coding in his own sandbox (component)
+* Allows to create plugin-based applications, which can be
+  easily extended in runtime without any recompile/patching;
+  just add new component even after program installation
+

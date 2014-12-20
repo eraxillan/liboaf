@@ -161,11 +161,12 @@ CMainWindow::aboutOpen ()
 void
 CMainWindow::aboutSave ()
 {
-	if (!m_document.queryInterface<OAF::IPropertyBag> ()->isDefined ("path"))
+	OAF::URef<OAF::IPropertyBag> pb = m_document.queryInterface<OAF::IPropertyBag> ();
+	if (!pb || !pb->isDefined ("path"))
 		aboutSaveAs ();
 	else
 	{
-		OAF::URef<OAF::IIODevice> d = OAF::createFromName<OAF::IIODevice> (m_document.queryInterface<OAF::IPropertyBag> ()->getValue ("path").toString ());
+		OAF::URef<OAF::IIODevice> d = OAF::createFromName<OAF::IIODevice> (pb->getValue ("path").toString ());
 		if (d->device ()->open (QIODevice::WriteOnly))
 		{
 			//
