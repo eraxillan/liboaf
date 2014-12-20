@@ -2,9 +2,7 @@ HASHSRCDIR = $${GIT2SRCDIR}/hash
 INCLUDEPATH+= $${HASHSRCDIR}
 
 #
-# Реализация генерации SHA1-ключа
-#
-# TODO: выяснить, какую из них стоит использовать
+# Implementation of SHA1 key hash generation
 #
 #SHA1_USE_GENERIC {
 #	HEADERS += $${HASHSRCDIR}/hash_generic.h

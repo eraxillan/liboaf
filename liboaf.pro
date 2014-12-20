@@ -3,7 +3,7 @@ CONFIG  += ordered
 SUBDIRS  = libs plugins programs
 
 #
-# Интерфейсы
+# Component Interfaces
 #
 HEADERS += \
 	idl/IConfig.h \
@@ -29,7 +29,7 @@ HEADERS += \
 	idl/IOperation.h
 
 #
-# Переводы
+# Translations to other languages (currently Russian only)
 #
 TRANSLATIONS += \
 	translate/liboaf_ru.ts
@@ -38,7 +38,7 @@ TRANSLATIONS_FILES += \
 	translate/liboaf_ru.qm
 
 #
-# Путь установки общих данных
+# Shared data installation path configuration
 #
 win32 {
 	isEmpty(DATA_INSTALL_PATH):DATA_INSTALL_PATH = /data
@@ -48,18 +48,18 @@ else {
 }
 
 #
-# Установка общих данных
+# Shared data installation target configuration
 #
 data.files = share/*
 data.path  = $${DATA_INSTALL_PATH}
 
 #
-# Установка переводов
+# Translations installation target configuration
 #
 translations.files = $${TRANSLATIONS_FILES}
 translations.path  = $${DATA_INSTALL_PATH}/translate
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += data translations

@@ -1,6 +1,9 @@
 TARGET   = oaf-io-1.0
 TEMPLATE = lib
 
+#
+# Qt5-specific configuration options
+#
 greaterThan(QT_MAJOR_VERSION, 4) {
 	QT += concurrent
 }
@@ -11,21 +14,21 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 CONFIG += qt thread warn_on plugin
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -33,7 +36,7 @@ OBJECTS_DIR = $${buildmode}
 MOC_DIR     = $${buildmode}
 
 #
-# Настройка каталогов размещения собранных файлов
+# Install directory for the compiled library files configuration
 #
 win32 {
 	isEmpty(PLUGIN_INSTALL_PATH):PLUGIN_INSTALL_PATH = /bin/plugins
@@ -43,23 +46,23 @@ else {
 }
 
 #
-# Путь установки библиотеки
+# Library installation target configuration
 #
 target.path = $${PLUGIN_INSTALL_PATH}
 
 #
-# Установка OAF-файла
+# OAF-file installation target configuration
 #
 oaf.files = liboaf-io-1.0.oaf
 oaf.path  = $${PLUGIN_INSTALL_PATH}
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += target oaf
 
 #
-# Устанавливаем oaf-файлы в каталог сборки
+# Copy OAF-file to the library build directory
 #
 system($$QMAKE_MKDIR $$buildmode)
 system($$QMAKE_COPY *.oaf $$buildmode)
@@ -101,12 +104,12 @@ INCLUDEPATH += $${TOPSRCDIR}/libs/liboaf-std/include
 LIBS        += -L$${TOPSRCDIR}/libs/liboaf-std/$${buildmode} -loaf-std-qt4
 
 #
-# Подключаем информацию о версии libOAF
+# Include libOAF version information
 #
 include ($${TOPSRCDIR}/liboaf_version.pri)
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	src/CCommon.h \
@@ -117,7 +120,7 @@ HEADERS += \
 	src/CMonikerIO.h
 
 #
-# Исходные тексты
+# C++ Sources list
 #
 SOURCES += \
 	src/CCommon.cpp \

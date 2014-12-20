@@ -1,7 +1,12 @@
 TARGET   = oaf-oql-qt4
 TEMPLATE = lib
 
-QT += concurrent
+#
+# Qt5-specific configuration options
+#
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += concurrent
+}
 
 #
 # Build configuration
@@ -9,27 +14,27 @@ QT += concurrent
 CONFIG += qt thread warn_on
 
 #
-# Настройка динамической линковки под Windows
+# Dynamic linking configuration for the library under Windows
 #
 win32:CONFIG  += dll
 win32:DEFINES += OAFOQL_LIBRARY
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -37,7 +42,7 @@ OBJECTS_DIR = $${buildmode}
 MOC_DIR     = $${buildmode}
 
 #
-# Настройка каталогов размещения собранных файлов
+# Install directory for the compiled library files configuration
 #
 win32 {
 	isEmpty(LIBRARY_INSTALL_PATH):LIBRARY_INSTALL_PATH = /bin
@@ -47,25 +52,26 @@ else {
 }
 
 #
-# Путь установки библиотеки
+# Library installation target configuration
 #
 target.path = $${LIBRARY_INSTALL_PATH}
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += target
 
 #
-# Для сборки под MSVC отключаем использование <unistd.h> в bison
+# For build under Microsoft Visual C++ we need to disable unistd.h
+# header usage in bison
 #
-win32:DEFINES += YY_NO_UNISTD_H
+win32-msvc*:DEFINES += YY_NO_UNISTD_H
 
 #
-# Для сборки под MSVC нужно явно настроить параметры запуска bison и
-# и копирования полученных файлов
+# For build under Microsoft Visual C++ we need explicitly
+# setup bison parameters: path to it, output file names, etc.
 #
-win32 {
+win32-msvc* {
 	QMAKE_YACC             = bison
 	QMAKE_YACCFLAGS_MANGLE = -p OQLGram -b OQLGram
 	QMAKE_YACC_HEADER      = ${QMAKE_FILE_BASE}.tab.h
@@ -86,12 +92,12 @@ INCLUDEPATH += $${TOPSRCDIR}/libs/liboaf-core/include
 LIBS        += -L$${TOPSRCDIR}/libs/liboaf-core/$${buildmode} -loaf-core-qt4
 
 #
-# Дополнительный путь поиска заголовочных файлов
+# Additional C++ header search path
 #
 INCLUDEPATH += include
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	include/OAF/OafOqlGlobal.h \
@@ -99,13 +105,13 @@ HEADERS += \
 	include/OAF/OQL.h
 
 #
-# Исходные тексты
+# C++ Sources list
 #
 SOURCES += \
 	src/CExpression.cpp
 
 #
-# Исходный код сканера и парсера
+# OQL programming language scanner and parser source code
 #
 LEXSOURCES  += src/OQLscan.l
 YACCSOURCES += src/OQLgram.y

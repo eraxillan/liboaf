@@ -1,7 +1,15 @@
 TARGET   = oaf-gui-qt4
 TEMPLATE = lib
 
-greaterThan(QT_MAJOR_VERSION, 4) {
+#
+# Explicitly link with the Qt WebKit module
+#
+QT += webkit xml
+
+#
+# Qt5-specific configuration options
+#
+greaterThan( QT_MAJOR_VERSION, 4 ) {
 	QT += widgets
 	QT += webkitwidgets
 }
@@ -12,27 +20,27 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 CONFIG += qt thread warn_on
 
 #
-# Настройка динамической линковки под Windows
+# Dynamic linking configuration for the library under Windows
 #
 win32:CONFIG  += dll
 win32:DEFINES += OAFGUI_LIBRARY
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -40,7 +48,7 @@ OBJECTS_DIR = $${buildmode}
 MOC_DIR     = $${buildmode}
 
 #
-# Настройка каталогов размещения собранных файлов
+# Install directory for the compiled library files configuration
 #
 win32 {
 	isEmpty(LIBRARY_INSTALL_PATH):LIBRARY_INSTALL_PATH = /bin
@@ -50,19 +58,14 @@ else {
 }
 
 #
-# Путь установки библиотеки
+# Library installation target configuration
 #
 target.path = $${LIBRARY_INSTALL_PATH}
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += target
-
-#
-# Явно подключаем webkit - это нужно делать в любой версии Qt
-#
-QT += webkit xml
 
 #
 # OAF-ROOT
@@ -95,12 +98,12 @@ INCLUDEPATH += $${TOPSRCDIR}/libs/liboaf-std/include
 LIBS        += -L$${TOPSRCDIR}/libs/liboaf-std/$${buildmode} -loaf-std-qt4
 
 #
-# Дополнительный путь поиска заголовочных файлов
+# Additional C++ header search path
 #
 INCLUDEPATH += include
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	include/OAF/OafGuiGlobal.h \
@@ -116,7 +119,7 @@ HEADERS += \
 	include/OAF/CElidedLabel.h
 
 #
-# Исходные тексты
+# C++ Sources list
 #
 SOURCES += \
 	src/CLineEdit.cpp \
@@ -131,7 +134,7 @@ SOURCES += \
 	src/CElidedLabel.cpp
 
 #
-# Формы диалогов
+# Graphical User Interface forms
 #
 FORMS += \
 	src/CSearchLineWidget.ui \
@@ -139,7 +142,7 @@ FORMS += \
 	src/CWebSearchWidget.ui
 
 #
-# Ресурсы
+# Embeddable resources
 #
 RESOURCES += \
 	src/resources/liboaf_gui.qrc

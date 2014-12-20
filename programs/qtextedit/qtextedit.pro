@@ -1,6 +1,9 @@
 TARGET   = qtextedit
 TEMPLATE = app
 
+#
+# Qt5-specific configuration options
+#
 greaterThan(QT_MAJOR_VERSION, 4) {
 	QT += concurrent
 	QT += widgets
@@ -12,21 +15,21 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 CONFIG += qt thread warn_on
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -81,13 +84,13 @@ INCLUDEPATH += $${TOPSRCDIR}/libs/liboaf-gui/include
 LIBS        += -L$${TOPSRCDIR}/libs/liboaf-gui/$${buildmode} -loaf-gui-qt4
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	src/CMainWindow.h
 
 #
-# Исходные тексты
+# C++ Sources list
 #
 SOURCES += \
 	src/CMainWindow.cpp \

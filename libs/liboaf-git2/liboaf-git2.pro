@@ -7,27 +7,27 @@ TEMPLATE = lib
 CONFIG += qt thread warn_on
 
 #
-# Настройка динамической линковки под Windows
+# Dynamic linking configuration for the library under Windows
 #
 win32:CONFIG  += dll
 win32:DEFINES += OAFGIT2_LIBRARY
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -35,7 +35,7 @@ OBJECTS_DIR = $${buildmode}
 MOC_DIR     = $${buildmode}
 
 #
-# Настройка каталогов размещения собранных файлов
+# Install directory for the compiled library files configuration
 #
 win32 {
 	isEmpty(LIBRARY_INSTALL_PATH):LIBRARY_INSTALL_PATH = /bin
@@ -45,12 +45,12 @@ else {
 }
 
 #
-# Путь установки библиотеки
+# Library installation target configuration
 #
 target.path = $${LIBRARY_INSTALL_PATH}
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += target
 
@@ -60,7 +60,7 @@ INSTALLS += target
 TOPSRCDIR = .
 
 #
-# Основные директории
+# The base library directories
 #
 GIT2SRCDIR         = $${TOPSRCDIR}/src
 GIT2INCLUDEDIRMAIN = $${TOPSRCDIR}/include
@@ -70,7 +70,7 @@ INCLUDEPATH += $${GIT2INCLUDEDIRMAIN}
 INCLUDEPATH += $${GIT2SRCDIR}
 
 #
-# Определяем архитектуру и разрядность процессора
+# Determine current CPU architecture and build libgit2 for it
 #
 contains(QMAKE_HOST.arch, x86_64) {
 	DEFINES += GIT_ARCH_64
@@ -79,8 +79,9 @@ contains(QMAKE_HOST.arch, x86_64) {
 }
 
 #
-# Под Windows должно использоваться stdcall-соглашение о вызове функций,
-# а также будем использовать многопоточную версию C-рантайма
+# Under Windows library must use stdcall calling convention
+# and the multithreaded C runtime library:
+#
 # /Gz - stdcall convention
 # /GF - String pooling
 # /MP - Parallel build
@@ -101,7 +102,7 @@ contains(QMAKE_HOST.arch, x86_64) {
 win32 {
 	contains(QMAKE_CC, cl) {
 		#
-		# Обнаружен компилятор Visual Studio
+		# Microsoft Visual C++
 		#
 #		QMAKE_CFLAGS_DEBUG += /Gz
 		#
@@ -116,7 +117,7 @@ win32 {
 		QMAKE_CFLAGS_RELEASE -= /Zm1000
 
 		#
-		# Под 64-битную Windows компилируем 64-битную версию библиотеки
+		# Under Windows X86-64 we will compile the X86-64 library version
 		#
 		contains(QMAKE_HOST.arch, x86_64) {
 			QMAKE_CFLAGS_DEBUG += /MACHINE:x64
@@ -141,27 +142,27 @@ win32 {
 		QMAKE_LFLAGS_RELEASE += /RELEASE /LTCG /OPT:REF /OPT:ICF /INCREMENTAL:NO
 
 		#
-		# Линкуем библиотеку сокетов
+		# Link with Windows Sockets libraries (optionally)
 		#
 #		LIBS += ws2_32
 		#
-		# Для работы с HTTP будем использовать WinAPI
+		# Use Windows API for work with HTTP protocol
 		#
 		DEFINES += GIT_WINHTTP
 		QMAKE_CXXFLAGS += /UUNICODE
 		CONFIG += GIT_WINHTTP
 		#
-		# Эти флаги для WinAPI
+		# Specific flags for Windows API usage
 		#
 		DEFINES += -DWIN32 -D_WIN32_WINNT=0x0501
 
 		#
-		# Подключаем стандартные целочисленные типы (для gcc есть в поставке)
+		# Include header with standart integer types (gcc already have one)
 		#
 		HEADERS += include/git2/inttypes.h
 
 		#
-		# Подключаем POSIX-версию regex - библиотеки регулярных выражений
+		# Use the POSIX regular expressions library
 		#
 		include ($${GIT2DEPSDIR}/regex/regex.pri)
 
@@ -180,25 +181,27 @@ else: unix {
 }
 
 #
-# Во всех остальных случаях (кроме Windows + MSVC) для работы с HTTP будем использовать
-# внутреннюю библиотеку http-parser
+# In other cases (Windows and Visual C++) we will use internal library
+# to work with HTTP protocol
+#
 #
 !GIT_WINHHTP {
 	include ($${GIT2DEPSDIR}/http-parser/http-parser.pri)
 }
 
 #
-# Включаем отчет об ошибках git в отладочной версии
+# Enable the library debug output under debug build
 #
 CONFIG(debug,debug|release) {
 	DEFINES += GIT_TRACE
 }
 
 #
-# TODO: Выбираем реализацию sha1 в зависимости от ОС и компилятора
-# Пока используем встроенную, т.к. фиг знает, чем они все отличаются
+# TODO: Select the appropriate SHA1 implementation depending on operating system and C++ compiler
+# For a while we we will used internal one, because the implemetation differences are not so obvious
 #
-# NOTE: используем CONFIG вместо DEFINES, т.к. эта переменная внутренняя и не должна попасть компилятору
+# NOTE: use CONFIG instead of DEFINES, because this variable is qmake-specific
+# and will not be visible to the compiler
 #IF (WIN32 AND NOT MINGW AND NOT SHA1_TYPE STREQUAL "builtin")
 #	ADD_DEFINITIONS(-DWIN32_SHA1)
 #	FILE(GLOB SRC_SHA1 src/hash/hash_win32.c)
@@ -214,7 +217,7 @@ win32 {
 }
 
 #
-# Подключаем обязательную зависимость: библиотеку для ZIP-сжатия zlib
+# Link the required dependency: zlib, ZIP algorithm compression library
 #
 DEFINES += NO_VIZ
 DEFINES += STDC
@@ -222,10 +225,9 @@ DEFINES += NO_GZIP
 include ($${GIT2DEPSDIR}/zlib/zlib.pri)
 
 #
-# Подключаем опциональную зависимость: библиотеку libssh2 для доступа к удаленным репозиториям по SSH
+# Link the optional dependency: libssh2, for the remote git repository access using SSH protocol
 #
-# TODO: нужно таскать с собой libssh2 по образу и подобию zlib, в каталоге deps,
-# т.к. безопасный доступ по SSH бы пригодился бы в будущем
+# TODO: store libssh2 inside of library like zlib in deps directory
 #
 #packagesExist (libssh2) {
 #	DEFINES += GIT_SSH
@@ -238,12 +240,12 @@ include ($${GIT2DEPSDIR}/zlib/zlib.pri)
 #}
 
 #
-# Подключаем опциональную зависимость: библиотеку openssl для более безопасного
-# вычисления SHA1-ключей и для доступа к удаленным репозиториям по HTTPS
+# Link the optional dependency: openssl, for the more secure SHA1-keys hash generation
+# and secure access to remote git repository using HTTPS protocol
 #
 #packagesExist(openssl) {
 #	DEFINES += GIT_SSL
-# TODO: задавать пути к заголовочным файлам под Windows с помощью переменной
+# TODO: configure header path under Windows using the separate variable
 #	INCLUDEPATH += openssl/err.h \
 #		openssl/sha.h \
 #		openssl/ssl.h \
@@ -253,14 +255,14 @@ include ($${GIT2DEPSDIR}/zlib/zlib.pri)
 #}
 
 #
-# TODO: нужна ли эта потокобезопасность? пока обходимся без нее
+# TODO: do we need this thread safety?
 #
 #DEFINES += GIT_THREADS
 
 DEFINES += _FILE_OFFSET_BITS=64
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	include/git2.h \
@@ -320,7 +322,7 @@ HEADERS += \
 	include/git2/pathspec.h
 
 #
-# Код для низкоуровневой работы с коммитом, индексом и прочими объектами git
+# Library internal headers for low-level wirk with commits, indeces and other git objects
 #
 HEADERS += \
 	include/git2/sys/commit.h \
@@ -421,7 +423,7 @@ HEADERS += \
 	src/status.h
 
 #
-# Исходные тексты
+# C++ Sources list
 #
 SOURCES += \
 	src/attr.c \
@@ -518,7 +520,7 @@ SOURCES += \
 	src/intl/libgit2_intl.cpp
 
 #
-# Подключаем подпроекты с реализацией генерации хэшей, доступа к сети, поиска различий в тексте
+# Include subprojects with various implementations of hash generation, network access, diff search in the text
 #
 include(src/xdiff/xdiff.pri)
 include(src/transports/transports.pri)

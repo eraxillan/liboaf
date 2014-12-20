@@ -1,6 +1,14 @@
 TARGET   = oaf-std-qt4
 TEMPLATE = lib
 
+#
+# Explicitly link with the Qt WebKit module
+#
+QT += webkit xml
+
+#
+# Qt5-specific configuration options
+#
 greaterThan(QT_MAJOR_VERSION, 4) {
 	QT += concurrent
 	QT += widgets
@@ -12,27 +20,27 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 CONFIG += qt thread warn_on
 
 #
-# Настройка динамической линковки под Windows
+# Dynamic linking configuration for the library under Windows
 #
 win32:CONFIG  += dll
 win32:DEFINES += OAFSTD_LIBRARY
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -40,7 +48,7 @@ OBJECTS_DIR = $${buildmode}
 MOC_DIR     = $${buildmode}
 
 #
-# Настройка каталогов размещения собранных файлов
+# Install directory for the compiled library files configuration
 #
 win32 {
 	isEmpty(LIBRARY_INSTALL_PATH):LIBRARY_INSTALL_PATH = /bin
@@ -50,19 +58,14 @@ else {
 }
 
 #
-# Путь установки библиотеки
+# Library installation target configuration
 #
 target.path = $${LIBRARY_INSTALL_PATH}
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += target
-
-#
-# Явно подключаем webkit - это нужно делать в любой версии Qt
-#
-QT += webkit xml
 
 #
 # OAF-ROOT
@@ -95,12 +98,12 @@ INCLUDEPATH  += $${TOPSRCDIR}/libs/liboaf-git2/include
 LIBS         += -L$${TOPSRCDIR}/libs/liboaf-git2/$${buildmode} -loaf-git2
 
 #
-# Дополнительный путь поиска заголовочных файлов
+# Additional C++ header search path
 #
 INCLUDEPATH += include
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	include/OAF/OafStdGlobal.h \
@@ -118,7 +121,7 @@ HEADERS += \
 	include/OAF/Consts.h
 
 #
-# Исходные тексты
+# C++ Sources list
 #
 SOURCES += \
 	src/CTreeNode.cpp \

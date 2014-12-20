@@ -8,27 +8,27 @@ CONFIG += qt thread warn_on
 QT -= gui
 
 #
-# Настройка динамической линковки под Windows
+# Dynamic linking configuration for the library under Windows
 #
 win32:CONFIG  += dll
 win32:DEFINES += OAFCORE_LIBRARY
 
 #
-# Данный набор флагов необходим для корректной работы механизма
-# RTTI между загружаемыми внешними библиотеками под UNIX. Данный
-# флаг должен использоваться при линковке ВСЕХ компонент
-# системы: библиотек, плагинов и приложений.
+# Flags for the correct RTTI work under Unix-like operating systems
+#
+# NOTE: These flags must be used in all system components:
+# libraries, plugins, application
 #
 unix:QMAKE_LFLAGS += -Wl,-E
 
 #
-# Режим сборки (по умолчанию - release)
+# Build mode configuration (release by default)
 #
 buildmode = release
 CONFIG(debug, debug|release):buildmode = debug
 
 #
-# Настройка директорий сборки отдельно для каждого из режимов
+# Build directories configation depending on the build mode
 #
 DESTDIR     = $${buildmode}
 UI_DIR      = $${buildmode}
@@ -36,7 +36,7 @@ OBJECTS_DIR = $${buildmode}
 MOC_DIR     = $${buildmode}
 
 #
-# Настройка каталогов размещения собранных файлов
+# Install directory for the compiled library files configuration
 #
 win32 {
 	isEmpty(LIBRARY_INSTALL_PATH):LIBRARY_INSTALL_PATH = /bin
@@ -46,12 +46,12 @@ else {
 }
 
 #
-# Путь установки библиотеки
+# Library installation target configuration
 #
 target.path = $${LIBRARY_INSTALL_PATH}
 
 #
-# Настройка инсталляции
+# Installation targets configuration
 #
 INSTALLS += target
 
@@ -62,21 +62,21 @@ TOPSRCDIR    = ../..
 INCLUDEPATH += $${TOPSRCDIR}
 
 #
-# Дополнительный путь поиска заголовочных файлов
+# Additional C++ header search path
 #
 INCLUDEPATH += include
 
 #
-# Отключаем поддержку потоков в Boost
+# Disable threading support in the Boost
 #
 DEFINES += BOOST_DISABLE_THREADS
 
 #
-# Набор флагов для корректной линковкой с ликсом в виндовс
+# The set of flags for the correct Boost library linking with LyX under the Windows
 #
 win32 {
     #
-    # Собираем динамически
+	# Build Boost as shared library
     #
     DEFINES += BOOST_ALL_DYN_LINK
 
@@ -103,7 +103,7 @@ win32 {
     QMAKE_CXXFLAGS_RELEASE += /MD /Fo"support.dir/Release/"
 
     #
-    # Убираем флаг оптимизации, т.к. он конфликтует с /RTC1
+	# NOTE: Remove the optimization flag: it conflict with /RTC1 one
     #
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_LFLAGS_DEBUG += /DEBUG
@@ -113,30 +113,29 @@ win32 {
 }
 
 #
-# Для совместной сборки сигналов Boost и Qt
+# Boost.Signals and Qt signals/slots are conflicting, so we need to disable Qt ones
 #
 CONFIG += no_keywords
 
 #
-# Блокируем предупреждения о неиспользуемых локальных объвлениях типов,
-# при сборке старого Boost из состава LyX gcc >= 4.8
+# Disable unused local types warnings while building using gcc >= 4.8
 #
 linux-g++* {
 	system( g++ --version | grep -e "\\>[5-9].[0-9].[0-9]" ) {
-		# g++ версии 5 или выше
+		# g++ version 5 or higher
 		QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
 	} else {
 		system( g++ --version | grep -e "[4].[8-9].[0-9]" ) {
-			# g++ версии 4.8 или выше
+			# g++ version 4.8 or higher
 			QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
 		} else {
-			# g++ версии до 4.7.9
+			# g++ version before 4.7.9
 		}
 	}
 }
 
 #
-# Заголовочные файлы
+# C++ Headers list
 #
 HEADERS += \
 	include/*
